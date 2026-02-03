@@ -13,11 +13,6 @@ const Gauge = @import("gauge.zig");
 
 var total_elapsed_time: f64 = 0.0;
 
-const t = @cImport({
-    @cInclude("time.h");
-    @cInclude("bits/time.h");
-});
-
 var cluster: Cluster = undefined;
 
 pub fn main() !void {
