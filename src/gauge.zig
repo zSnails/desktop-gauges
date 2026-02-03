@@ -104,7 +104,6 @@ pub fn update(self: *Self) void {
 
 fn drawIndicator(self: *Self) void {
     c.cairo_save(self.ctx.cairo_context);
-    // c.cairo_set_source_rgb(self.ctx.cairo_context, 1.0, 0.9294117647, 0.3058823529);
     c.cairo_set_source_rgb(
         self.ctx.cairo_context,
         self.indicator_color.r,
@@ -157,7 +156,6 @@ fn drawIndicatorSpokes(self: *Self) void {
     );
 
     c.cairo_set_line_width(self.ctx.cairo_context, self.spoke_width);
-    // c.cairo_set_line_width(self.ctx.cairo_context, self.radius * 0.10);
     for (0..spoke_count) |idx| {
         const i: f64 = @floatFromInt(idx);
         const start = self.gauge_start + (i * stride);
