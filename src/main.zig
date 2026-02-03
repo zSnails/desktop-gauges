@@ -201,24 +201,20 @@ fn update(ctx: *Context, dt: f64) void {
     }
 }
 
-fn clearFrame(ctx: *Context, width: i32, height: i32) void {
+fn clearFrame(ctx: *Context) void {
     c.cairo_save(ctx.cairo_context);
     c.cairo_set_source_rgba(ctx.cairo_context, 0.0, 0.0, 0.0, 0.0);
     c.cairo_set_operator(ctx.cairo_context, c.CAIRO_OPERATOR_CLEAR);
-    c.cairo_rectangle(ctx.cairo_context, 0, 0, @floatFromInt(width), @floatFromInt(height));
+    c.cairo_rectangle(ctx.cairo_context, 0, 0, ctx.width, ctx.height);
     c.cairo_paint_with_alpha(ctx.cairo_context, 1.0);
     c.cairo_set_operator(ctx.cairo_context, c.CAIRO_OPERATOR_OVER);
     c.cairo_new_path(ctx.cairo_context);
     c.cairo_restore(ctx.cairo_context);
 }
 
-fn drawFrame(ctx: *Context, width: i32, height: i32) void {
+fn drawFrame(ctx: *Context) void {
     _ = ctx; // autofix
-    _ = width; // autofix
-    _ = height; // autofix
-    // drawGauge(ctx);
     cluster.draw();
-    // main_gauge.draw();
 }
 
 fn registryListener(registry: *wl.Registry, event: wl.Registry.Event, context: *Context) void {
