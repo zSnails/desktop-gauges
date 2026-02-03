@@ -30,6 +30,7 @@ radius: f64 = undefined,
 center_x: f64 = undefined,
 center_y: f64 = undefined,
 
+indicator_radius: f64 = undefined,
 indicator_width: f64 = undefined,
 underline_radius: f64 = undefined,
 spoke_radius: f64 = undefined,
@@ -52,10 +53,11 @@ pub fn create(ctx: *Context, radius: f64, x: f64, y: f64) Self {
 
 pub fn init(self: *Self) void {
     self.indicator_width = self.radius * 0.2;
-    self.underline_radius = (self.radius - self.indicator_width / 2) - 2;
-    self.spoke_radius = self.radius;
     self.spoke_width = self.indicator_width + 5;
-    self.redline_radius = self.radius + self.indicator_width / 2 + 2;
+    self.redline_radius = self.radius;
+    self.indicator_radius = self.radius - self.indicator_width / 2 - 2;
+    self.underline_radius = (self.indicator_radius - self.indicator_width / 2) - 2;
+    self.spoke_radius = self.indicator_radius;
 
     c.cairo_set_font_size(self.ctx.cairo_context, self.radius * 0.30);
 
@@ -114,7 +116,7 @@ fn drawIndicator(self: *Self) void {
         self.ctx.cairo_context,
         self.center_x,
         self.center_y,
-        self.radius,
+        self.indicator_radius,
         self.gauge_start,
         self.gauge_start + (self.gauge_end - self.gauge_start) * self.gauge_indicator_level,
     );
