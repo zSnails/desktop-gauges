@@ -1,7 +1,8 @@
 const std = @import("std");
 
 const c = @import("cairo.zig").c;
-const Context = @import("context.zig");
+const Window = @import("window.zig");
+const Context = Window.Context;
 const color = @import("color.zig");
 
 fn d2r(degrees: comptime_float) comptime_float {

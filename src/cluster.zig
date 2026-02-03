@@ -3,7 +3,8 @@ const Gauge = @import("gauge.zig");
 const c = @import("cairo.zig").c;
 
 const Self = @This();
-const Context = @import("context.zig");
+const Window = @import("window.zig");
+const Context = Window.Context;
 
 allocator: std.mem.Allocator = undefined,
 gauges: std.ArrayList(*Gauge) = undefined,
