@@ -1,6 +1,5 @@
 const std = @import("std");
 
-const bezier = @import("bezier.zig");
 const c = @import("cairo.zig").c;
 const Context = @import("context.zig");
 const color = @import("color.zig");
