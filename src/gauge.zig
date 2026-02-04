@@ -39,10 +39,13 @@ spoke_radius: f64 = undefined,
 spoke_width: f64 = undefined,
 redline_radius: f64 = undefined,
 
+// NOTE: I added the NUL byte just in case
+value_fmt: []const u8 = "%03.0f%%\x00",
 value_x: f64 = undefined,
 value_y: f64 = undefined,
 label_x: f64 = undefined,
 label_y: f64 = undefined,
+label: []const u8 = "rpm",
 
 pub fn create(ctx: *Context, radius: f64, x: f64, y: f64) Self {
     return Self{
