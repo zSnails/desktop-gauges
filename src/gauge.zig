@@ -95,7 +95,7 @@ pub fn set_rpm(self: *Self, new_rpm: f64) void {
 }
 
 pub fn update(self: *Self) void {
-    const smoothing = 0.09;
+    const smoothing = 0.03;
 
     self.current_value += (self.target_value - self.current_value) * smoothing;
 
