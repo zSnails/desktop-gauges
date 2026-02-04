@@ -16,8 +16,8 @@ ctx: *Context = undefined,
 gauge_start: f64 = d2r(120.0),
 gauge_end: f64 = d2r(344.0),
 
-default_indicator_color: color.RGB = color.CYAN,
-current_indicator_color: color.RGB = color.CYAN,
+default_indicator_color: color.RGB = color.CYBER_YELLOW,
+current_indicator_color: color.RGB = undefined,
 underline_color: color.RGB = color.WHITE,
 spoke_color: color.RGB = color.WHITE,
 redline_color: color.RGB = color.CYBER_RED,
@@ -87,7 +87,8 @@ pub fn draw(self: *Self) void {
 }
 
 pub fn set_rpm(self: *Self, new_rpm: f64) void {
-    self.target_value = new_rpm;
+    const target = std.math.clamp(new_rpm, 0, self.max_value);
+    self.target_value = target;
 }
 
 pub fn update(self: *Self) void {
@@ -98,7 +99,7 @@ pub fn update(self: *Self) void {
     self.gauge_indicator_level = self.current_value / self.max_value;
 
     self.current_indicator_color =
-        if (self.current_value > 6800)
+        if (self.current_value > self.max_value * 0.8)
             color.CYBER_RED
         else
             self.default_indicator_color;
@@ -168,7 +169,7 @@ fn drawIndicatorSpokes(self: *Self) void {
             // self.radius + 2,
             self.spoke_radius,
             start,
-            start + d2r(0.5),
+            start + d2r(1),
         );
         c.cairo_stroke(self.ctx.cairo_context);
     }
