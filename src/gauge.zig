@@ -213,18 +213,30 @@ fn drawRpmLabel(self: *Self, x: f64, y: f64) void {
     );
     c.cairo_move_to(self.ctx.cairo_context, x, y);
     // TODO: receive a label name for the gauge
-    c.cairo_text_path(self.ctx.cairo_context, "rpm");
+    const label: [*c]const u8 = @ptrCast(self.label);
+    c.cairo_text_path(self.ctx.cairo_context, label);
     c.cairo_fill(self.ctx.cairo_context);
     c.cairo_restore(self.ctx.cairo_context);
 }
 
+// BUG: this POS will cause a bug somewhere
+const stdio = @cImport({
+    @cInclude("stdio.h");
+});
+
 fn drawRpmValue(self: *Self, x: f64, y: f64) void {
-    var rpmBuf: [6]u8 = undefined;
+    var rpmBuf: [10]u8 = undefined;
     c.cairo_save(self.ctx.cairo_context);
     c.cairo_set_source_rgb(self.ctx.cairo_context, 1, 1, 1);
     c.cairo_move_to(self.ctx.cairo_context, x, y);
-    const rpm = std.fmt.bufPrintZ(&rpmBuf, "{: >4.0}", .{self.current_value}) catch unreachable;
-    c.cairo_text_path(self.ctx.cairo_context, rpm);
+
+    // FIXME: find an actual library to replace the builtin fmt module and stop
+    // using stdio for this
+
+    const fmt: [*c]const u8 = @ptrCast(self.value_fmt);
+    _ = stdio.snprintf(@as([*c]u8, @ptrCast(&rpmBuf)), 9, fmt, self.current_value);
+
+    c.cairo_text_path(self.ctx.cairo_context, @as([*c]const u8, @ptrCast(&rpmBuf)));
     c.cairo_fill(self.ctx.cairo_context);
     c.cairo_restore(self.ctx.cairo_context);
 }
