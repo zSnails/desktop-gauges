@@ -163,7 +163,7 @@ fn mainDrawingFunction(cb: *wl.Callback, event: wl.Callback.Event, self: *Self) 
             self.drawFrame();
 
             self.context.surface.attach(self.context.buffer, 0, 0);
-            self.context.surface.damage(0, 0, 480, 480);
+            self.context.surface.damage(0, 0, @intFromFloat(self.context.width), @intFromFloat(self.context.height));
             self.context.surface.commit();
             const f: f64 = @floatFromInt(e.callback_data);
             self.context.delta = f / 1000000000.0;
