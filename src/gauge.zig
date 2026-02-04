@@ -16,7 +16,8 @@ ctx: *Context = undefined,
 gauge_start: f64 = d2r(120.0),
 gauge_end: f64 = d2r(344.0),
 
-indicator_color: color.RGB = color.CYBER_YELLOW,
+default_indicator_color: color.RGB = color.CYAN,
+current_indicator_color: color.RGB = color.CYAN,
 underline_color: color.RGB = color.WHITE,
 spoke_color: color.RGB = color.WHITE,
 redline_color: color.RGB = color.CYBER_RED,
@@ -96,20 +97,20 @@ pub fn update(self: *Self) void {
 
     self.gauge_indicator_level = self.current_value / self.max_value;
 
-    self.indicator_color =
+    self.current_indicator_color =
         if (self.current_value > 6800)
             color.CYBER_RED
         else
-            color.CYBER_YELLOW;
+            self.default_indicator_color;
 }
 
 fn drawIndicator(self: *Self) void {
     c.cairo_save(self.ctx.cairo_context);
     c.cairo_set_source_rgb(
         self.ctx.cairo_context,
-        self.indicator_color.r,
-        self.indicator_color.g,
-        self.indicator_color.b,
+        self.current_indicator_color.r,
+        self.current_indicator_color.g,
+        self.current_indicator_color.b,
     );
     c.cairo_set_line_width(self.ctx.cairo_context, self.indicator_width);
     c.cairo_arc(
@@ -202,9 +203,9 @@ fn drawRpmLabel(self: *Self, x: f64, y: f64) void {
 
     c.cairo_set_source_rgb(
         self.ctx.cairo_context,
-        self.indicator_color.r,
-        self.indicator_color.g,
-        self.indicator_color.b,
+        self.current_indicator_color.r,
+        self.current_indicator_color.g,
+        self.current_indicator_color.b,
     );
     c.cairo_move_to(self.ctx.cairo_context, x, y);
     // TODO: receive a label name for the gauge
