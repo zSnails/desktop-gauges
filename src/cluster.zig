@@ -38,6 +38,6 @@ pub fn update(self: *Self) void {
     }
 }
 
-pub fn appendGauge(self: *Self, gauge: *Gauge) !void {
+pub fn addGauge(self: *Self, gauge: *Gauge) !void {
     try self.gauges.append(self.allocator, gauge);
 }

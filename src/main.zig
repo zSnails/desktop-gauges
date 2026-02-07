@@ -28,7 +28,7 @@ pub fn main() !void {
     const thread = try std.Thread.spawn(.{ .allocator = alloc }, TEST_GAUGE_INDICATOR_ANIMATION, .{&gauge});
     thread.detach();
 
-    try cluster.appendGauge(&gauge);
+    try cluster.addGauge(&gauge);
 
     window.cluster = cluster;
 
