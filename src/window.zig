@@ -101,7 +101,7 @@ pub fn init(width: f64, height: f64) !Self {
 
     c.cairo_select_font_face(
         window.context.cairo_context,
-        "Rajdhani",
+        "IosevkaTerm Nerd Font Propo",
         c.CAIRO_FONT_SLANT_NORMAL,
         c.CAIRO_FONT_WEIGHT_NORMAL,
     );
