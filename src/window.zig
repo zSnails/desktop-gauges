@@ -97,8 +97,6 @@ pub fn init(width: f64, height: f64) !Self {
 
     c.cairo_set_antialias(window.context.cairo_context, c.CAIRO_ANTIALIAS_BEST);
 
-    // TODO: load the registered gauges
-
     c.cairo_select_font_face(
         window.context.cairo_context,
         "IosevkaTerm Nerd Font Propo",
@@ -124,7 +122,6 @@ fn registerCallback(self: *Self) !void {
 fn update(self: *Self) void {
     self.context.elapsed += self.context.delta;
     if (self.cluster) |*cluster| {
-        std.debug.print("updating cluster\n", .{});
         cluster.update();
     }
 
@@ -158,7 +155,6 @@ fn mainDrawingFunction(cb: *wl.Callback, event: wl.Callback.Event, self: *Self) 
 
             self.update();
 
-            // FIXME: propagate the actual width and height of this POS
             self.clearFrame();
             self.drawFrame();
 
@@ -172,7 +168,6 @@ fn mainDrawingFunction(cb: *wl.Callback, event: wl.Callback.Event, self: *Self) 
 }
 
 pub fn showAndRun(self: *Self) !void {
-
     try registerCallback(self);
     self.drawFrame();
 
