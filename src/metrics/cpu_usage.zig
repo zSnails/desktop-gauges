@@ -1,8 +1,8 @@
 const std = @import("std");
 
-var prev_total: i64 = 0;
-var prev_non_idle: i64 = 0;
-var prev_idle: i64 = 0;
+threadlocal var prev_total: i64 = 0;
+threadlocal var prev_non_idle: i64 = 0;
+threadlocal var prev_idle: i64 = 0;
 
 /// TODO: I need to get individual cpu usage, basically this but for every cpu
 /// in my pc, then I'll return some kind of array with every usage value
