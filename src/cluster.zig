@@ -1,5 +1,5 @@
 const std = @import("std");
-const Gauge = @import("gauge.zig");
+const Gauge = @import("./gauge/gauge.zig");
 const c = @import("cairo.zig").c;
 
 const Self = @This();
