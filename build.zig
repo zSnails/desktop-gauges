@@ -1,7 +1,7 @@
 const std = @import("std");
 const Scanner = @import("wayland").Scanner;
 
-pub fn build(b: *std.Build) void {
+pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
