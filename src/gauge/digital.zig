@@ -48,6 +48,15 @@ value_y: f64 = undefined,
 label_x: f64 = undefined,
 label_y: f64 = undefined,
 label: []const u8 = "rpm",
+data_provider: ?Gauge.Provider = null,
+provider_thread: std.Thread = undefined,
+_gauge: ?Gauge = null,
+
+pub fn join(gauge: *anyopaque) void {
+    var self: *Self = @ptrCast(@alignCast(gauge));
+    std.debug.print("joining thread\n", .{});
+    self.provider_thread.join();
+}
 
 pub fn create(ctx: *Context, radius: f64, x: f64, y: f64) Self {
     return Self{
@@ -58,7 +67,10 @@ pub fn create(ctx: *Context, radius: f64, x: f64, y: f64) Self {
     };
 }
 
-pub fn init(self: *Self) void {
+pub fn init(self: *Self) !void {
+    if (self.data_provider == null) {
+        @panic("init called without a provider properly set, please set a provider using the setProvider function");
+    }
     self.indicator_width = self.radius * 0.2;
     self.spoke_width = self.indicator_width + 5;
     self.redline_radius = self.radius;
@@ -71,13 +83,23 @@ pub fn init(self: *Self) void {
     var extents: c.cairo_text_extents_t = undefined;
     c.cairo_text_extents(self.ctx.cairo_context, "0", &extents);
 
-    std.debug.print("got glyph height of = {}\n", .{extents.height});
-
     self.value_x = self.center_x + self.radius * 0.4;
     self.value_y = self.center_y + self.radius * 0.4;
 
     self.label_x = self.value_x;
     self.label_y = self.value_y + extents.height;
+
+    const self_interface = self.getGauge();
+    const provider_thread = try std.Thread.spawn(
+        .{ .allocator = std.heap.smp_allocator },
+        threadMain,
+        .{ self_interface, self.data_provider.? },
+    );
+    self.provider_thread = provider_thread;
+}
+
+fn threadMain(gauge: *Gauge, provider: Gauge.Provider) void {
+    provider(gauge);
 }
 
 pub fn draw(gauge: *anyopaque) void {
@@ -100,8 +122,6 @@ pub fn setValue(gauge: *anyopaque, new_value: f64) void {
 
 pub fn update(gauge: *anyopaque) void {
     var self: *Self = @ptrCast(@alignCast(gauge));
-    // std.debug.print("cairo context addr = {x}\n", .{@intFromPtr(self.ctx.cairo_context)});
-    // const smoothing = 0.003;
     const smoothing: comptime_float = 1.0 / 30.0;
 
     self.current_value += (self.target_value - self.current_value) * smoothing;
@@ -270,24 +290,28 @@ pub fn setValueFmt(gauge: *anyopaque, new_value_fmt: []const u8) void {
     self.value_fmt = new_value_fmt;
 }
 
-pub fn setProvider(gauge: *anyopaque, provider: *Gauge.Provider) void {
-    _ = gauge; // autofix
-    _ = provider; // autofix
-    @panic("Tried calling Digital.setProvider, this function still has not been implemented and should be called");
+pub fn setProvider(self: *Self, provider: Gauge.Provider) void {
+    self.data_provider = provider;
 }
 
-pub fn getGauge(self: *Self) Gauge {
-    return .{
-        .ptr = self,
-        .vtable = &Gauge.VTable{
-            .draw = draw,
-            .update = update,
-            .setValue = setValue,
-            .setLabel = setLabel,
-            .setMaxValue = setMaxValue,
-            .setMinValue = setMinValue,
-            .setValueFmt = setValueFmt,
-            .setProvider = setProvider,
-        },
-    };
+pub fn getGauge(self: *Self) *Gauge {
+    if (self._gauge == null) {
+        if (@intFromPtr(self) == 0x2) {
+            @panic("WTF!");
+        }
+        self._gauge = .{
+            .ptr = self,
+            .vtable = &Gauge.VTable{
+                .draw = draw,
+                .update = update,
+                .setValue = setValue,
+                .setLabel = setLabel,
+                .setMaxValue = setMaxValue,
+                .setMinValue = setMinValue,
+                .setValueFmt = setValueFmt,
+                .join = join,
+            },
+        };
+    }
+    return &self._gauge.?;
 }

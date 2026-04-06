@@ -1,7 +1,7 @@
 pub const Digital = @import("./digital.zig");
 
 pub const Self = @This();
-pub const Provider = fn (gauge: *Self) void;
+pub const Provider = *const fn (gauge: *Self) void;
 
 ptr: *anyopaque,
 vtable: *const VTable,
@@ -14,8 +14,12 @@ pub const VTable = struct {
     setMinValue: *const fn (gauge: *anyopaque, new_min_value: f64) void,
     setLabel: *const fn (gauge: *anyopaque, new_label: []const u8) void,
     setValueFmt: *const fn (gauge: *anyopaque, new_value_fmt: []const u8) void,
-    setProvider: *const fn (gauge: *anyopaque, provider: *Provider) void,
+    join: *const fn (gauge: *anyopaque) void,
 };
+
+pub fn join(self: *Self) void {
+    self.vtable.join(self.ptr);
+}
 
 pub fn draw(self: *Self) void {
     self.vtable.draw(self.ptr);

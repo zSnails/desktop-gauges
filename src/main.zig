@@ -25,29 +25,19 @@ pub fn main() !void {
     defer cluster.deinit();
 
     var gauge = Gauge.Digital.create(context, 200, 200, 200);
-    gauge.init();
+    gauge.setProvider(gaugeTemperatureStatusThread);
+    try gauge.init();
 
-    var interface = gauge.getGauge();
-    const thread = try std.Thread.spawn(
-        .{ .allocator = alloc },
-        gaugeTemperatureStatusThread,
-        .{&interface},
-    );
-    thread.detach();
+    const interface = gauge.getGauge();
 
-    try cluster.addGauge(&interface);
+    try cluster.addGauge(interface);
 
     var ram_gauge = Gauge.Digital.create(context, 200, 700, 200);
-    ram_gauge.init();
-    var ram_gauge_interface = ram_gauge.getGauge();
-    const ram_gauge_thread = try std.Thread.spawn(
-        .{ .allocator = alloc },
-        gaugeCpuUsageThread,
-        .{&ram_gauge_interface},
-    );
-    ram_gauge_thread.detach();
+    ram_gauge.setProvider(gaugeCpuUsageThread);
+    try ram_gauge.init();
+    const ram_gauge_interface = ram_gauge.getGauge();
 
-    try cluster.addGauge(&ram_gauge_interface);
+    try cluster.addGauge(ram_gauge_interface);
 
     std.debug.print("using cluster with {} items\n", .{cluster.gauges.items.len});
     window.cluster = cluster;
@@ -57,22 +47,19 @@ pub fn main() !void {
 
 // TODO: find a way of abstracting away these pieces of shit
 
-fn gaugeCpuUsageThread(gauge: *Gauge) !void {
-    std.debug.print("address = {}\n", .{@intFromPtr(gauge)});
+fn gaugeCpuUsageThread(gauge: *Gauge) void {
     gauge.setMaxValue(100);
     gauge.setLabel("cpu");
     std.debug.print("Begin test indicator animator loop\n", .{});
     while (true) {
-        const cpu_usage = try cpu.getCpuUsage();
+        const cpu_usage = cpu.getCpuUsage() catch unreachable;
         gauge.setValue(cpu_usage * 100);
         std.Thread.sleep(5e9);
     }
 }
 
 fn gaugeMemoryUsageThread(gauge: *Gauge) !void {
-    std.debug.print("address = {}\n", .{@intFromPtr(gauge)});
     const ram_usage = ram.getRamUsage();
-    // gauge.max_value = @floatFromInt(ram_usage.total / 1024 / 1024 / 1024);
     gauge.setMaxValue(@floatFromInt(ram_usage.total / 1024 / 1024 / 1024));
     gauge.setMinValue(0.0);
     gauge.setLabel("ram");
@@ -87,24 +74,28 @@ fn gaugeMemoryUsageThread(gauge: *Gauge) !void {
     }
 }
 
-fn gaugeTemperatureStatusThread(gauge: *Gauge) !void {
+fn gaugeTemperatureStatusThread(gauge: *Gauge) void {
     // /sys/class/hwmon/hwmon2/temp3_input
-
     gauge.setMaxValue(100.0);
     gauge.setMinValue(-100.0);
     gauge.setLabel("Temp");
     gauge.setValueFmt("%.2fC\x00");
+    std.debug.print("setting the POS did not crash\n", .{});
     var buf: [1024]u8 = undefined;
     while (true) {
-        const hwmon = try std.fs.openFileAbsolute("/sys/class/hwmon/hwmon2/temp3_input", .{ .mode = .read_only });
+        const hwmon = std.fs.openFileAbsolute(
+            "/sys/class/hwmon/hwmon2/temp3_input",
+            .{ .mode = .read_only },
+        ) catch unreachable;
         defer hwmon.close();
         var reader = hwmon.reader(&buf);
-        if (try reader.interface.takeDelimiter(0x0a)) |line| {
-            const temp: f64 = @floatFromInt(try std.fmt.parseInt(i64, line, 10));
+        if (reader.interface.takeDelimiter(0x0a) catch unreachable) |line| {
+            const temp: f64 = @floatFromInt(std.fmt.parseInt(i64, line, 10) catch unreachable);
             const temp_c = temp / 1000;
             gauge.setValue(temp_c);
         } else {
-            return error.CouldNotReadIdkTODO_Define_This_Error_Properly;
+            @panic("error.CouldNotReadIdkTODO_Define_This_Error_Properly");
+            // return error.CouldNotReadIdkTODO_Define_This_Error_Properly;
         }
         std.Thread.sleep(5e9);
     }
