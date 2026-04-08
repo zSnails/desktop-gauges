@@ -11,6 +11,7 @@ const Cluster = @import("cluster.zig");
 const Gauge = @import("gauge/gauge.zig");
 const cpu = @import("metrics/cpu_usage.zig");
 const ram = @import("metrics/ram_usage.zig");
+const temp = @import("metrics/temperature.zig");
 const Window = @import("window.zig");
 const Context = Window.Context;
 
@@ -24,11 +25,11 @@ pub fn main() !void {
     var cluster = try Cluster.init(alloc, context);
     defer cluster.deinit();
 
-    var gauge = Gauge.Digital.create(context, 200, 200, 200);
-    gauge.setProvider(gaugeTemperatureStatusThread);
-    try gauge.init();
+    var temperature_gauge = Gauge.Digital.create(context, 100, 100, 100);
+    temperature_gauge.setProvider(gaugeTemperatureStatusThread);
+    try temperature_gauge.init();
 
-    const interface = gauge.getGauge();
+    const interface = temperature_gauge.getGauge();
 
     try cluster.addGauge(interface);
 
@@ -76,28 +77,14 @@ fn gaugeMemoryUsageThread(gauge: *Gauge) !void {
 }
 
 fn gaugeTemperatureStatusThread(gauge: *Gauge) void {
-    // /sys/class/hwmon/hwmon2/temp3_input
     gauge.setMaxValue(100.0);
     gauge.setMinValue(-100.0);
     gauge.setLabel("Temp");
     gauge.setValueFmt("%.2fC\x00");
-    var buf: [1024]u8 = undefined;
     std.log.info("Temperature indicator loop running on cpu {}", .{std.Thread.getCurrentId()});
     while (true) {
-        const hwmon = std.fs.openFileAbsolute(
-            "/sys/class/hwmon/hwmon2/temp3_input",
-            .{ .mode = .read_only },
-        ) catch unreachable;
-        defer hwmon.close();
-        var reader = hwmon.reader(&buf);
-        if (reader.interface.takeDelimiter(0x0a) catch unreachable) |line| {
-            const temp: f64 = @floatFromInt(std.fmt.parseInt(i64, line, 10) catch unreachable);
-            const temp_c = temp / 1000;
-            gauge.setValue(temp_c);
-        } else {
-            @panic("error.CouldNotReadIdkTODO_Define_This_Error_Properly");
-            // return error.CouldNotReadIdkTODO_Define_This_Error_Properly;
-        }
+        const temperature = temp.getTemperature();
+        gauge.setValue(temperature);
         std.Thread.sleep(5e9);
     }
 }
