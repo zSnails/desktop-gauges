@@ -83,11 +83,12 @@ pub fn init(self: *Self) !void {
     var extents: c.cairo_text_extents_t = undefined;
     c.cairo_text_extents(self.ctx.cairo_context, "0", &extents);
 
-    self.value_x = self.center_x + self.radius * 0.4;
-    self.value_y = self.center_y + self.radius * 0.4;
+    self.value_x = self.center_x; // + self.radius * 0.4;
+    self.value_y = self.center_y + (extents.height / 2); // + self.radius * 0.4;
 
     self.label_x = self.value_x;
-    self.label_y = self.value_y + extents.height;
+    self.label_y = self.value_y + (extents.height) + 5;
+
     std.log.debug("center = ({}, {})", .{ self.center_x, self.center_y });
     std.log.debug("label center = ({}, {})", .{ self.label_x, self.label_y });
     std.log.debug("value center = ({}, {})", .{ self.value_x, self.value_y });
