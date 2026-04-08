@@ -108,7 +108,7 @@ pub fn init(width: f64, height: f64) !Self {
 }
 
 fn registerCallback(self: *Self) !void {
-    std.log.debug("Registering initial frame callback", .{});
+    std.log.info("Registering initial frame callback", .{});
     const callback = try self.context.surface.frame();
 
     callback.setListener(
