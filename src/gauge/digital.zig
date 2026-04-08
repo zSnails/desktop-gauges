@@ -54,7 +54,7 @@ _gauge: ?Gauge = null,
 
 pub fn join(gauge: *anyopaque) void {
     var self: *Self = @ptrCast(@alignCast(gauge));
-    std.debug.print("joining thread\n", .{});
+    std.log.debug("joining thread", .{});
     self.provider_thread.join();
 }
 
@@ -88,6 +88,9 @@ pub fn init(self: *Self) !void {
 
     self.label_x = self.value_x;
     self.label_y = self.value_y + extents.height;
+    std.log.debug("center = ({}, {})", .{ self.center_x, self.center_y });
+    std.log.debug("label center = ({}, {})", .{ self.label_x, self.label_y });
+    std.log.debug("value center = ({}, {})", .{ self.value_x, self.value_y });
 
     const self_interface = self.getGauge();
     const provider_thread = try std.Thread.spawn(
@@ -117,6 +120,7 @@ pub fn draw(gauge: *anyopaque) void {
 pub fn setValue(gauge: *anyopaque, new_value: f64) void {
     var self: *Self = @ptrCast(@alignCast(gauge));
     const target = std.math.clamp(new_value, self.min_value, self.max_value);
+    std.log.debug("target value: {}", .{target});
     self.target_value = target;
 }
 

@@ -108,7 +108,7 @@ pub fn init(width: f64, height: f64) !Self {
 }
 
 fn registerCallback(self: *Self) !void {
-    std.debug.print("Registering initial frame callback\n", .{});
+    std.log.debug("Registering initial frame callback", .{});
     const callback = try self.context.surface.frame();
 
     callback.setListener(
@@ -126,7 +126,7 @@ fn update(self: *Self) void {
     }
 
     if (std.math.isNan(self.context.elapsed)) {
-        std.debug.print("the elapsed time has become NaN\n", .{});
+        std.log.debug("the elapsed time has become NaN", .{});
         std.process.exit(1);
     }
 }
@@ -262,7 +262,7 @@ fn layerSurfaceListener(layer_surface: *wlr.LayerSurfaceV1, event: wlr.LayerSurf
             layer_surface.ackConfigure(configure.serial);
         },
         .closed => {
-            std.debug.print("this piece of shit just closed\n", .{});
+            std.log.info("layer surface listener just closed", .{});
         },
     }
 }

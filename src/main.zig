@@ -39,7 +39,6 @@ pub fn main() !void {
 
     try cluster.addGauge(ram_gauge_interface);
 
-    std.debug.print("using cluster with {} items\n", .{cluster.gauges.items.len});
     window.cluster = cluster;
 
     try window.showAndRun();
@@ -50,7 +49,7 @@ pub fn main() !void {
 fn gaugeCpuUsageThread(gauge: *Gauge) void {
     gauge.setMaxValue(100);
     gauge.setLabel("cpu");
-    std.debug.print("Begin test indicator animator loop\n", .{});
+    std.log.info("CPU indicator loop running on cpu {}", .{std.Thread.getCurrentId()});
     while (true) {
         const cpu_usage = cpu.getCpuUsage() catch unreachable;
         gauge.setValue(cpu_usage * 100);
@@ -64,12 +63,14 @@ fn gaugeMemoryUsageThread(gauge: *Gauge) !void {
     gauge.setMinValue(0.0);
     gauge.setLabel("ram");
     gauge.setValueFmt("%.0fGiB\x00");
-    std.debug.print("Begin ram test indicator animator loop\n", .{});
+    std.log.info("Ram indicator loop running on cpu {}", .{std.Thread.getCurrentId()});
     while (true) {
-        std.debug.print("total = {} free = {}\nused = {}", .{ ram_usage.total, ram_usage.free, ram_usage.total - ram_usage.free });
         const usage = ram.getRamUsage();
         const _u: f64 = @floatFromInt(usage.total - usage.free);
         gauge.setValue(_u / 1024 / 1024 / 1024);
+        std.log.debug("usage = {}", .{ram_usage});
+        std.log.debug("actual value we got: {}", .{converted});
+        std.log.debug("after being processed: {}", .{processed});
         std.Thread.sleep(5e9);
     }
 }
@@ -80,8 +81,8 @@ fn gaugeTemperatureStatusThread(gauge: *Gauge) void {
     gauge.setMinValue(-100.0);
     gauge.setLabel("Temp");
     gauge.setValueFmt("%.2fC\x00");
-    std.debug.print("setting the POS did not crash\n", .{});
     var buf: [1024]u8 = undefined;
+    std.log.info("Temperature indicator loop running on cpu {}", .{std.Thread.getCurrentId()});
     while (true) {
         const hwmon = std.fs.openFileAbsolute(
             "/sys/class/hwmon/hwmon2/temp3_input",
