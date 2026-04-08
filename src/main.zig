@@ -40,6 +40,14 @@ pub fn main() !void {
 
     try cluster.addGauge(ram_gauge_interface);
 
+    var cpu_gauge = Gauge.Digital.create(context, 100, 500, 100);
+    cpu_gauge.setProvider(gaugeCpuUsageThread);
+    try cpu_gauge.init();
+    const cpu_gauge_interface = cpu_gauge.getGauge();
+
+    try cluster.addGauge(cpu_gauge_interface);
+
+    std.log.info("using cluster with {} items", .{cluster.gauges.items.len});
     window.cluster = cluster;
 
     try window.showAndRun();
