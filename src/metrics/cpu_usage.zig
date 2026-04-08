@@ -17,7 +17,7 @@ pub fn getCpuUsage() !f64 {
 
 
     var reader = file.reader(&buf);
-    if (try reader.interface.takeDelimiter('\n')) |line| {
+    if (try reader.interface.takeDelimiter(0xA)) |line| {
         var dataIterator = std.mem.splitAny(u8, line, " ");
         // FIXME: this way of parsing is pretty stupid, I'm guessing there's
         // some kind of syscall that exists for this purpose
