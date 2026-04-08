@@ -7,7 +7,7 @@ Gauge-like widgets for the desktop.
 # Overview
 
 Desktop gauges is a small widget/software (I'm not sure how to catalog this honestly)
-for displaying different system metrics on your system.
+for displaying different system metrics on your desktop.
 
 # Why
 
