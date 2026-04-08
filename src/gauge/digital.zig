@@ -257,12 +257,12 @@ const stdio = @cImport({
     @cInclude("stdio.h");
 });
 
+var rpmBuf: [10]u8 = undefined;
+
 fn drawRpmValue(self: *Self, x: f64, y: f64) void {
-    var rpmBuf: [10]u8 = undefined;
     c.cairo_save(self.ctx.cairo_context);
     c.cairo_set_source_rgb(self.ctx.cairo_context, 1, 1, 1);
     c.cairo_move_to(self.ctx.cairo_context, x, y);
-
     // FIXME: find an actual library to replace the builtin fmt module and stop
     // using stdio for this
 
