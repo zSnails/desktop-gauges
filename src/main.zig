@@ -33,8 +33,8 @@ pub fn main() !void {
 
     try cluster.addGauge(interface);
 
-    var ram_gauge = Gauge.Digital.create(context, 200, 700, 200);
-    ram_gauge.setProvider(gaugeCpuUsageThread);
+    var ram_gauge = Gauge.Digital.create(context, 100, 300, 100);
+    ram_gauge.setProvider(gaugeMemoryUsageThread);
     try ram_gauge.init();
     const ram_gauge_interface = ram_gauge.getGauge();
 
@@ -58,20 +58,22 @@ fn gaugeCpuUsageThread(gauge: *Gauge) void {
     }
 }
 
-fn gaugeMemoryUsageThread(gauge: *Gauge) !void {
-    const ram_usage = ram.getRamUsage();
-    gauge.setMaxValue(@floatFromInt(ram_usage.total / 1024 / 1024 / 1024));
+fn gaugeMemoryUsageThread(gauge: *Gauge) void {
+    var ram_usage: ram.RamUsage = undefined;
+    ram.getRamUsage(&ram_usage);
+    gauge.setMaxValue(@as(f64, @floatFromInt(ram_usage.total)) / 1024 / 1024);
     gauge.setMinValue(0.0);
     gauge.setLabel("ram");
-    gauge.setValueFmt("%.0fGiB\x00");
+    gauge.setValueFmt("%.1fGiB\x00");
     std.log.info("Ram indicator loop running on cpu {}", .{std.Thread.getCurrentId()});
     while (true) {
-        const usage = ram.getRamUsage();
-        const _u: f64 = @floatFromInt(usage.total - usage.free);
-        gauge.setValue(_u / 1024 / 1024 / 1024);
+        ram.getRamUsage(&ram_usage);
         std.log.debug("usage = {}", .{ram_usage});
+        const converted: f64 = @floatFromInt(ram_usage.total - ram_usage.available);
         std.log.debug("actual value we got: {}", .{converted});
+        const processed = converted / 1024 / 1024;
         std.log.debug("after being processed: {}", .{processed});
+        gauge.setValue(processed);
         std.Thread.sleep(5e9);
     }
 }
