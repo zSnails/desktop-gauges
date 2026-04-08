@@ -9,6 +9,11 @@ Gauge-like widgets for the desktop.
 Desktop gauges is a small widget/software (I'm not sure how to catalog this honestly)
 for displaying different system metrics on your desktop.
 
+# Support
+
+This currently only works in wayland, and I'm not planning on adding X11 support
+myself, but contributions are always welcome.
+
 # Why
 
 I built this because I was trying to use conky for creating a dashboard like desktop
