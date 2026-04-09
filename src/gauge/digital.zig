@@ -121,7 +121,6 @@ pub fn draw(gauge: *anyopaque) void {
 pub fn setValue(gauge: *anyopaque, new_value: f64) void {
     var self: *Self = @ptrCast(@alignCast(gauge));
     const target = std.math.clamp(new_value, self.min_value, self.max_value);
-    std.log.debug("target value: {}", .{target});
     self.target_value = target;
 }
 

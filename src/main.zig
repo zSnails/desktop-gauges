@@ -76,11 +76,8 @@ fn gaugeMemoryUsageThread(gauge: *Gauge) void {
     std.log.info("Ram indicator loop running on cpu {}", .{std.Thread.getCurrentId()});
     while (true) {
         ram.getRamUsage(&ram_usage);
-        std.log.debug("usage = {}", .{ram_usage});
         const converted: f64 = @floatFromInt(ram_usage.total - ram_usage.available);
-        std.log.debug("actual value we got: {}", .{converted});
         const processed = converted / 1024 / 1024;
-        std.log.debug("after being processed: {}", .{processed});
         gauge.setValue(processed);
         std.Thread.sleep(5e9);
     }
