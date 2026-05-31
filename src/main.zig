@@ -89,7 +89,7 @@ fn gaugeMemoryUsageThread(io: std.Io, gauge: *Gauge) void {
 fn gaugeTemperatureStatusThread(io: std.Io, gauge: *Gauge) void {
     gauge.setMaxValue(100.0);
     gauge.setMinValue(-100.0);
-    gauge.setLabel("Temp");
+    gauge.setLabel("temp");
     gauge.setValueFmt("%.2fC\x00");
     std.log.info("Temperature indicator loop running on cpu {}", .{std.Thread.getCurrentId()});
     while (true) {
