@@ -31,7 +31,7 @@ pub fn build(b: *std.Build) !void {
         .needed = true,
         .preferred_link_mode = .static,
     });
-    exe.linkLibC();
+    exe.root_module.linkSystemLibrary("c", .{});
     exe.root_module.linkSystemLibrary("wayland-client", .{
         .needed = true,
         .preferred_link_mode = .static,
