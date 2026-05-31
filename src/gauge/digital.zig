@@ -97,13 +97,13 @@ pub fn init(self: *Self) !void {
     const provider_thread = try std.Thread.spawn(
         .{ .allocator = std.heap.smp_allocator },
         threadMain,
-        .{ self_interface, self.data_provider.? },
+        .{ self.ctx.io, self_interface, self.data_provider.? },
     );
     self.provider_thread = provider_thread;
 }
 
-fn threadMain(gauge: *Gauge, provider: Gauge.Provider) void {
-    provider(gauge);
+fn threadMain(io: std.Io, gauge: *Gauge, provider: Gauge.Provider) void {
+    provider(io, gauge);
 }
 
 pub fn draw(gauge: *anyopaque) void {

@@ -1,7 +1,8 @@
 pub const Digital = @import("./digital.zig");
+const std = @import("std");
 
 pub const Self = @This();
-pub const Provider = *const fn (gauge: *Self) void;
+pub const Provider = *const fn (io: std.Io, gauge: *Self) void;
 
 ptr: *anyopaque,
 vtable: *const VTable,

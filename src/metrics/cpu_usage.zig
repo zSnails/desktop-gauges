@@ -8,15 +8,17 @@ threadlocal var prev_idle: i64 = 0;
 threadlocal var buf: [1024]u8 = undefined;
 /// TODO: I need to get individual cpu usage, basically this but for every cpu
 /// in my pc, then I'll return some kind of array with every usage value
-pub fn getCpuUsage() !f64 {
-    const file = try std.fs.openFileAbsolute(
+pub fn getCpuUsage(io: std.Io) !f64 {
+    
+    const file = try std.Io.Dir.openFileAbsolute(
+        io,
         "/proc/stat",
         .{ .mode = .read_only },
     );
-    defer file.close();
+    defer file.close(io);
 
 
-    var reader = file.reader(&buf);
+    var reader = file.reader(io, &buf);
     if (try reader.interface.takeDelimiter(0xA)) |line| {
         var dataIterator = std.mem.splitAny(u8, line, " ");
         // FIXME: this way of parsing is pretty stupid, I'm guessing there's

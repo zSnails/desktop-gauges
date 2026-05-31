@@ -26,14 +26,16 @@ pub const Context = struct {
     shared_memory_data: ?*anyopaque = null,
     delta: f64 = undefined,
     elapsed: f64 = 0.0,
+    io: std.Io,
 };
 
 context: Context = undefined,
 cluster: ?Cluster = undefined,
 
-pub fn init(width: f64, height: f64) !Self {
+pub fn init(io: std.Io, width: f64, height: f64) !Self {
     var window = Self{
         .context = Context{
+            .io = io,
             .width = width,
             .height = height,
         },

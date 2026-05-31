@@ -9,8 +9,9 @@ pub const RamUsage = struct {
 };
 
 threadlocal var buf: [1024]u8 = undefined;
-pub fn getRamUsage(usage: *RamUsage) void {
-    const meminfo = std.fs.openFileAbsolute(
+pub fn getRamUsage(io: std.Io, usage: *RamUsage) void {
+    const meminfo = std.Io.Dir.openFileAbsolute(
+        io,
         "/proc/meminfo",
         .{
             .mode = .read_only,
@@ -19,9 +20,9 @@ pub fn getRamUsage(usage: *RamUsage) void {
         std.log.err("error reading meminfo: {}", .{err});
         std.process.exit(1);
     };
-    defer meminfo.close();
+    defer meminfo.close(io);
 
-    var reader = meminfo.reader(&buf);
+    var reader = meminfo.reader(io, &buf);
     if (reader.interface.takeDelimiter(0xA) catch unreachable) |line| {
         var total_iterator = std.mem.tokenizeScalar(u8, line, ' ');
         _ = total_iterator.next(); // this pos skips the first fucker

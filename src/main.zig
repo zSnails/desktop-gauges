@@ -15,9 +15,9 @@ const temp = @import("metrics/temperature.zig");
 const Window = @import("window.zig");
 const Context = Window.Context;
 
-pub fn main() !void {
+pub fn main(init: std.process.Init) !void {
     const alloc = std.heap.smp_allocator;
-    var window = try Window.init(1080, 400);
+    var window = try Window.init(init.io, 1080, 400);
     defer window.deinit();
 
     const context = window.getContext();
@@ -55,43 +55,47 @@ pub fn main() !void {
 
 // TODO: find a way of abstracting away these pieces of shit
 
-fn gaugeCpuUsageThread(gauge: *Gauge) void {
+fn gaugeCpuUsageThread(io: std.Io, gauge: *Gauge) void {
     gauge.setMaxValue(100);
     gauge.setLabel("cpu");
     std.log.info("CPU indicator loop running on cpu {}", .{std.Thread.getCurrentId()});
     while (true) {
-        const cpu_usage = cpu.getCpuUsage() catch unreachable;
+        const cpu_usage = cpu.getCpuUsage(io) catch unreachable;
         gauge.setValue(cpu_usage * 100);
-        std.Thread.sleep(5e9);
+        // std.Thread.sleep(5e9);
+        io.sleep(std.Io.Duration.fromSeconds(5), std.Io.Clock.real) catch unreachable;
     }
 }
 
-fn gaugeMemoryUsageThread(gauge: *Gauge) void {
+fn gaugeMemoryUsageThread(io: std.Io, gauge: *Gauge) void {
     var ram_usage: ram.RamUsage = undefined;
-    ram.getRamUsage(&ram_usage);
+    ram.getRamUsage(io, &ram_usage);
     gauge.setMaxValue(@as(f64, @floatFromInt(ram_usage.total)) / 1024 / 1024);
     gauge.setMinValue(0.0);
     gauge.setLabel("ram");
     gauge.setValueFmt("%.1fGiB\x00");
     std.log.info("Ram indicator loop running on cpu {}", .{std.Thread.getCurrentId()});
     while (true) {
-        ram.getRamUsage(&ram_usage);
+        ram.getRamUsage(io, &ram_usage);
         const converted: f64 = @floatFromInt(ram_usage.total - ram_usage.available);
         const processed = converted / 1024 / 1024;
         gauge.setValue(processed);
-        std.Thread.sleep(5e9);
+        // std.Thread.sleep(5e9);
+
+        io.sleep(std.Io.Duration.fromSeconds(5), std.Io.Clock.real) catch unreachable;
     }
 }
 
-fn gaugeTemperatureStatusThread(gauge: *Gauge) void {
+fn gaugeTemperatureStatusThread(io: std.Io, gauge: *Gauge) void {
     gauge.setMaxValue(100.0);
     gauge.setMinValue(-100.0);
     gauge.setLabel("Temp");
     gauge.setValueFmt("%.2fC\x00");
     std.log.info("Temperature indicator loop running on cpu {}", .{std.Thread.getCurrentId()});
     while (true) {
-        const temperature = temp.getTemperature();
+        const temperature = temp.getTemperature(io);
         gauge.setValue(temperature);
-        std.Thread.sleep(5e9);
+        // std.Thread.sleep(5e9);
+        io.sleep(std.Io.Duration.fromSeconds(5), std.Io.Clock.real) catch unreachable;
     }
 }
