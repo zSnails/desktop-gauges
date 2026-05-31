@@ -5,7 +5,7 @@ threadlocal var buf: [1024]u8 = undefined;
 pub fn getTemperature(io: std.Io) f64 {
     const hwmon = std.Io.Dir.openFileAbsolute(
         io,
-        "/sys/class/hwmon/hwmon1/temp3_input",
+        "/sys/class/hwmon/hwmon2/temp3_input",
         .{ .mode = .read_only },
     ) catch |err| {
         std.log.err("error reading temp3_input: {}", .{err});
