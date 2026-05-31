@@ -215,7 +215,8 @@ fn createBuffer(self: *Self) !void {
     self.context.shared_memory_data = @ptrCast(try std.posix.mmap(
         null,
         size,
-        std.posix.PROT.READ | std.posix.PROT.WRITE,
+        // std.posix.PROT.READ | std.posix.PROT.WRITE,
+        .{ .READ = true, .WRITE = true },
         .{ .TYPE = .SHARED },
         fd,
         0,
