@@ -210,8 +210,9 @@ fn createBuffer(self: *Self) !void {
         "desktop-gauges-shared-memory",
         0,
     );
-    defer std.posix.close(fd);
-    try std.posix.ftruncate(fd, @intCast(size));
+    defer _ = std.os.linux.close(fd);
+    _ = std.os.linux.ftruncate(fd, @intCast(size));
+    // try std.posix.ftruncate(fd, @intCast(size));
     self.context.shared_memory_data = @ptrCast(try std.posix.mmap(
         null,
         size,
