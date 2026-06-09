@@ -16,7 +16,7 @@ const Window = @import("window.zig");
 const Context = Window.Context;
 
 pub fn main(init: std.process.Init) !void {
-    const alloc = std.heap.smp_allocator;
+    const alloc = init.arena.allocator();
     var window = try Window.init(init.io, 1080, 400);
     defer window.deinit();
 
