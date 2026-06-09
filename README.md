@@ -16,7 +16,7 @@ myself, but contributions are always welcome.
 
 # Why
 
-I built this because I was trying to use conky for creating a dashboard like desktop
+I built this because I was trying to use conky for creating a dashboard-like desktop
 display for system metrics, but found out that conky does not expose a cairo context
 in wayland.
 
