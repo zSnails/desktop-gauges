@@ -37,5 +37,7 @@ pub fn build(b: *std.Build) !void {
         .preferred_link_mode = .static,
     });
 
+    exe.root_module.addImport("zig-config", b.addModule("zig-config", .{ .root_source_file = b.path("./zig-config/src/zig-config.zig"), .target = target }));
+
     b.installArtifact(exe);
 }

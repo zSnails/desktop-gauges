@@ -1,0 +1,3 @@
+[submodule "zig-config"]
+	path = zig-config
+	url = git@github.com:zig-utils/zig-config.git
