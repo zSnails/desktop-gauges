@@ -58,7 +58,12 @@ pub fn join(gauge: *anyopaque) void {
     self.provider_thread.join();
 }
 
-pub fn create(ctx: *Context, radius: f64, x: f64, y: f64) Self {
+pub fn create(
+    ctx: *Context,
+    radius: f64,
+    x: f64,
+    y: f64,
+) Self {
     return Self{
         .ctx = ctx,
         .center_y = y,
