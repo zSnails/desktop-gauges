@@ -31,10 +31,13 @@ pub const Context = struct {
 
 context: Context = undefined,
 cluster: ?Cluster = undefined,
+thread_id: std.Thread.Id,
+
 const config = @import("config.zig");
 
 pub fn init(io: std.Io, width: f64, height: f64, thread_id: std.Thread.Id, anchor: config.Anchor) !Self {
     var window = Self{
+        .thread_id = thread_id,
         .context = Context{
             .io = io,
             .width = width,
@@ -111,7 +114,7 @@ pub fn init(io: std.Io, width: f64, height: f64, thread_id: std.Thread.Id, ancho
 }
 
 fn registerCallback(self: *Self) !void {
-    std.log.info("Registering initial frame callback", .{});
+    std.log.info("[{d}] Registering initial frame callback", .{self.thread_id});
     const callback = try self.context.surface.frame();
 
     callback.setListener(
@@ -129,7 +132,7 @@ fn update(self: *Self) void {
     }
 
     if (std.math.isNan(self.context.elapsed)) {
-        std.log.debug("the elapsed time has become NaN", .{});
+        std.log.debug("[{d}] the elapsed time has become NaN", .{self.thread_id});
         std.process.exit(1);
     }
 }
