@@ -31,8 +31,9 @@ pub const Context = struct {
 
 context: Context = undefined,
 cluster: ?Cluster = undefined,
+const config = @import("config.zig");
 
-pub fn init(io: std.Io, width: f64, height: f64) !Self {
+pub fn init(io: std.Io, width: f64, height: f64, thread_id: std.Thread.Id, anchor: config.Anchor) !Self {
     var window = Self{
         .context = Context{
             .io = io,
@@ -75,10 +76,10 @@ pub fn init(io: std.Io, width: f64, height: f64) !Self {
     // TODO: I should get this from the configuration file instead of this hard
     // coded POS
     wlr.LayerSurfaceV1.setAnchor(layer_surface, .{
-        .bottom = true,
-        .left = true,
-        .right = true,
-        .top = true,
+        .bottom = anchor.bottom,
+        .left = anchor.left,
+        .right = anchor.right,
+        .top = anchor.top,
     });
 
     wlr.LayerSurfaceV1.setSize(
