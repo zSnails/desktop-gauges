@@ -1,9 +1,26 @@
 {
-    "viewport": {
-        "width": 1920,
-        "height": 1080,
-        "x": 0,
-        "y": 0
-    },
-    "gauges": []
+    "clusters": [
+        {
+            "gauges": [
+                {
+                    "x": 150,
+                    "y": 150,
+                    "radius": 150,
+                    "provider": "memory"
+                },
+                {
+                    "x": 450,
+                    "y": 150,
+                    "radius": 150,
+                    "provider": "temperature"
+                }
+            ],
+            "viewport": {
+                "anchor": {
+                    "left": true,
+                    "bottom": true
+                }
+            }
+        }
+    ]
 }
