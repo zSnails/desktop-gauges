@@ -13,7 +13,7 @@ context: *Context = undefined,
 pub fn init(allocator: std.mem.Allocator, context: *Context) !Self {
     const result = Self{
         .allocator = allocator,
-        .gauges = try std.ArrayList(*Gauge).initCapacity(allocator, 3),
+        .gauges = try std.ArrayList(*Gauge).initCapacity(allocator, 5),
         .context = context,
     };
 
