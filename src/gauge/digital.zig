@@ -85,6 +85,8 @@ pub fn init(self: *Self) !void {
 
     c.cairo_set_font_size(self.ctx.cairo_context, self.radius * 0.30);
 
+    // safety: the extents variable gets popuplated in the call to
+    // c.cairo_text_extents below
     var extents: c.cairo_text_extents_t = undefined;
     c.cairo_text_extents(self.ctx.cairo_context, "0", &extents);
 

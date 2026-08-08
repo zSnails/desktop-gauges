@@ -19,6 +19,7 @@ pub fn gaugeCpuUsageThread(io: std.Io, gauge: *Gauge) void {
 }
 
 pub fn gaugeMemoryUsageThread(io: std.Io, gauge: *Gauge) void {
+    // safety: this will be set in the call to getRamUsage below
     var ram_usage: ram.RamUsage = undefined;
     ram.getRamUsage(io, &ram_usage);
     gauge.setMaxValue(@as(f64, @floatFromInt(ram_usage.total)) / 1024 / 1024);
