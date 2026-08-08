@@ -1,21 +1,11 @@
 const std = @import("std");
-const Instant = std.time.Instant;
 
 const getMetricProvider = @import("metrics/providers.zig").getMetricProvider;
-const wayland = @import("wayland");
 const zig_config = @import("zig-config");
-const wl = wayland.client.wl;
-const xdg = wayland.client.xdg;
-const wlr = wayland.client.zwlr;
 
-const c = @import("cairo.zig").c;
 const Cluster = @import("cluster.zig");
 const Gauge = @import("gauge/gauge.zig");
-const cpu = @import("metrics/cpu_usage.zig");
-const ram = @import("metrics/ram_usage.zig");
-const temp = @import("metrics/temperature.zig");
 const Window = @import("window.zig");
-const Context = Window.Context;
 const app_config = @import("config.zig");
 
 /// Computes and returns the viewport width and height based on the internal

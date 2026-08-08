@@ -2,7 +2,6 @@ const std = @import("std");
 
 const wayland = @import("wayland");
 const wl = wayland.client.wl;
-const xdg = wayland.client.xdg;
 const wlr = wayland.client.zwlr;
 
 const c = @import("cairo.zig").c;
