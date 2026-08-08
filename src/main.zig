@@ -119,31 +119,4 @@ pub fn main(init: std.process.Init) !void {
     for (threads.items) |thread| {
         thread.join();
     }
-    // TODO: create a window per cluster instead of drawing everything inside a huge window
-    // TODO: make pre compute the cluster window dimensions
-
-    // var temperature_gauge = Gauge.Digital.create(context, 100, 100, 100);
-    // temperature_gauge.setProvider(gaugeTemperatureStatusThread);
-    // try temperature_gauge.init();
-    //
-    // const interface = temperature_gauge.getGauge();
-    //
-    // try cluster.addGauge(interface);
-    //
-    // var ram_gauge = Gauge.Digital.create(context, 100, 300, 100);
-    // ram_gauge.setProvider(gaugeMemoryUsageThread);
-    // try ram_gauge.init();
-    // const ram_gauge_interface = ram_gauge.getGauge();
-    //
-    // try cluster.addGauge(ram_gauge_interface);
-    //
-    // var cpu_gauge = Gauge.Digital.create(context, 100, 500, 100);
-    // cpu_gauge.setProvider(gaugeCpuUsageThread);
-    // try cpu_gauge.init();
-    // const cpu_gauge_interface = cpu_gauge.getGauge();
-    //
-    // try cluster.addGauge(cpu_gauge_interface);
-
 }
-
-// TODO: find a way of abstracting away these pieces of shit
